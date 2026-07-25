@@ -49,12 +49,10 @@ a { color: var(--link); }
 
 /* ===== header and footer ===== */
 .menu { padding: 0; }
-.menu li { display: inline-block; }
+.menu li { display: inline-block; margin: 0 6px; }
 .menu a {
   text-decoration: none;
-  background: var(--menu-bg);
-  padding: 5px;
-  border-radius: 5px;
+  padding: 5px 2px;
   color: var(--text);
 }
 .menu, footer { text-align: center; }
