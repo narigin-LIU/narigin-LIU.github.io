@@ -1,0 +1,13 @@
+<script>
+(function() {
+  var theme = localStorage.getItem("theme");
+  if (theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+  } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    document.documentElement.setAttribute("data-theme", "dark");
+  }
+})();
+</script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link rel="stylesheet" href="{{ "css/syntax.css" | relURL }}" />
+<link rel="stylesheet" href="{{ "css/syntax-dark.css" | relURL }}" />

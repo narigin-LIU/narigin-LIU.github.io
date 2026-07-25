@@ -1,0 +1,44 @@
+{{ with .Site.Params.giscus }}
+{{ if (and .repo .repoId .category .categoryId) }}
+<div class="giscus" style="margin-top: 3em;">
+  <script>
+    (function() {
+      var d = document.documentElement;
+      var theme = d.getAttribute("data-theme") === "dark" ? "dark" : "light";
+
+      var script = document.createElement("script");
+      script.src = "https://giscus.app/client.js";
+      script.setAttribute("data-repo", "{{ .repo }}");
+      script.setAttribute("data-repo-id", "{{ .repoId }}");
+      script.setAttribute("data-category", "{{ .category }}");
+      script.setAttribute("data-category-id", "{{ .categoryId }}");
+      script.setAttribute("data-mapping", "{{ default "pathname" .mapping }}");
+      script.setAttribute("data-strict", "0");
+      script.setAttribute("data-reactions-enabled", "1");
+      script.setAttribute("data-emit-metadata", "0");
+      script.setAttribute("data-input-position", "{{ default "bottom" .inputPosition }}");
+      script.setAttribute("data-theme", theme);
+      script.setAttribute("data-lang", "{{ default "zh-CN" .lang }}");
+      script.setAttribute("crossorigin", "anonymous");
+      script.async = true;
+
+      var container = document.currentScript.parentElement;
+      container.appendChild(script);
+
+      // sync giscus theme when user toggles
+      var observer = new MutationObserver(function() {
+        var newTheme = d.getAttribute("data-theme") === "dark" ? "dark" : "light";
+        var iframe = document.querySelector(".giscus iframe");
+        if (iframe) {
+          iframe.contentWindow.postMessage(
+            { giscus: { setConfig: { theme: newTheme } } },
+            "https://giscus.app"
+          );
+        }
+      });
+      observer.observe(d, { attributes: true, attributeFilter: ["data-theme"] });
+    })();
+  </script>
+</div>
+{{ end }}
+{{ end }}

@@ -1,0 +1,70 @@
+baseurl: "https://example.org/"  # please update this to your actual URL
+locale: "en-us"
+title: "成銀の世界"
+theme: "xmin"
+googleAnalytics: ""
+disqusShortname: ""
+ignoreFiles: ["\\.Rmd$", "\\.Rmarkdown$", "_cache$"]
+footnotereturnlinkcontents: "↩"
+
+permalinks:
+  note: "/note/:year/:month/:day/:slug/"
+  post: "/post/:year/:month/:day/:slug/"
+
+menu:
+  main:
+    - name: Home
+      url: ""
+      weight: 1
+    - name: About
+      url: "about/"
+      weight: 2
+    - name: Categories
+      url: "categories/"
+      weight: 3
+    - name: Tags
+      url: "tags/"
+      weight: 4
+
+params:
+  description: "A website built through Hugo and blogdown."
+  footer: "&copy; [成銀](https://narigin-LIU.github.io) {Year}"
+  giscus:
+    repo: ""
+    repoId: ""
+    category: ""
+    categoryId: ""
+    mapping: "pathname"
+    inputPosition: "bottom"
+    lang: "zh-CN"
+
+security:
+  allowContent: ['.*']
+
+markup:
+  highlight:
+    codeFences: true
+    noClasses: false
+  goldmark:
+    renderer:
+      unsafe: true
+    extensions:
+      passthrough:
+        enable: true
+        delimiters:
+          block:
+          - - \[
+            - \]
+          - - $$
+            - $$
+          - - $$$$
+            - $$$$
+          inline:
+          - - \(
+            - \)
+          - - $
+            - $
+
+caches:
+  images:
+    dir: :cacheDir/images

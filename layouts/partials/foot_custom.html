@@ -1,0 +1,60 @@
+<script src="//cdn.jsdelivr.net/npm/katex/dist/katex.min.js" defer></script>
+<script src="//cdn.jsdelivr.net/npm/katex/dist/contrib/auto-render.min.js" defer></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "$$$$", right: "$$$$", display: true},
+      {left: "$", right: "$", display: false},
+      {left: "\\[", right: "\\]", display: true},
+      {left: "\\(", right: "\\)", display: false}
+    ]
+  });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  /* ---- copy buttons ---- */
+  document.querySelectorAll(".highlight").forEach(function(block) {
+    var btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.addEventListener("click", function() {
+      var code = block.querySelector("code");
+      if (!code) return;
+      navigator.clipboard.writeText(code.textContent).then(function() {
+        btn.textContent = "Copied!";
+        btn.classList.add("copied");
+        setTimeout(function() {
+          btn.textContent = "Copy";
+          btn.classList.remove("copied");
+        }, 2000);
+      });
+    });
+    block.appendChild(btn);
+  });
+
+  /* ---- theme toggle ---- */
+  var toggle = document.getElementById("theme-toggle");
+  var html = document.documentElement;
+
+  function setIcon(theme) {
+    toggle.textContent = theme === "dark" ? "🌙" : "☀️";
+  }
+
+  // init icon
+  setIcon(html.getAttribute("data-theme"));
+
+  toggle.addEventListener("click", function() {
+    var current = html.getAttribute("data-theme");
+    var next = current === "dark" ? "light" : "dark";
+    html.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
+    setIcon(next);
+  });
+});
+</script>
+
+<script src="//cdn.jsdelivr.net/npm/@xiee/utils/js/center-img.min.js" defer></script>

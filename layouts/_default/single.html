@@ -1,0 +1,21 @@
+{{ partial "header.html" . }}
+<div class="article-meta">
+<h1><span class="title">{{ .Title | markdownify }}</span></h1>
+{{ with .Params.author }}<h2 class="author">{{ . }}</h2>{{ end }}
+{{ if (gt .Params.date 0) }}<h2 class="date">{{ .Date.Format "2006/01/02" }}</h2>{{ end }}
+</div>
+
+<main>
+{{ .Content }}
+</main>
+
+<div class="license">
+  <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+    <img src="https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png" alt="CC BY-NC-SA 4.0" style="border-width:0" />
+  </a>
+  <p>本作品采用 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0 协议</a> 进行许可。</p>
+</div>
+
+{{ partial "giscus.html" . }}
+
+{{ partial "footer.html" . }}
