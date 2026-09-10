@@ -1,0 +1,163 @@
+{{ define "main" }}
+<h1>Search</h1>
+<p class="search-hint">Search across posts by title or content.</p>
+<input type="search" id="search-input" placeholder="search for everything" autocomplete="off" autofocus />
+<p id="search-status" class="search-status" aria-live="polite">Loading search index…</p>
+<ul id="search-results" class="search-results"></ul>
+
+<style>
+  #search-input {
+    width: 100%;
+    padding: 8px 12px;
+    margin: 0 0 1.5em;
+    font-family: var(--font-secondary);
+    font-size: var(--font-scale);
+    color: var(--text-color);
+    background-color: transparent;
+    border: 1px solid var(--heading-color);
+    border-radius: 4px;
+  }
+  #search-input:focus {
+    outline: none;
+    border-color: var(--link-color);
+  }
+  .search-status {
+    opacity: 0.8;
+  }
+  .search-results {
+    list-style: none;
+    padding: unset;
+  }
+  .search-results li {
+    margin-bottom: 1.25em;
+  }
+  .search-result-meta {
+    display: flex;
+    gap: 0.75em;
+    align-items: baseline;
+  }
+  .search-result-meta time {
+    flex: none;
+  }
+  .search-snippet {
+    margin: 0.25em 0 0;
+    opacity: 0.8;
+  }
+  mark {
+    background: none;
+    color: var(--link-color);
+    font-weight: bolder;
+    padding: 0;
+  }
+</style>
+
+<script src="{{ "js/fuse.min.js" | relURL }}"></script>
+<script>
+  (function () {
+    var input = document.getElementById('search-input');
+    var results = document.getElementById('search-results');
+    var status = document.getElementById('search-status');
+
+    var fuse = null;
+    var items = [];
+
+    fetch('{{ "index.json" | relURL }}')
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        items = data;
+        fuse = new Fuse(items, {
+          keys: ['title', 'content'],
+          threshold: 0.35,
+          ignoreLocation: true,
+          minMatchCharLength: 1,
+          includeMatches: true,
+        });
+        status.textContent = 'Type to search.';
+        input.focus();
+      })
+      .catch(function (err) {
+        status.textContent = 'Failed to load search index.';
+        console.error(err);
+      });
+
+    // Append `text` into `el`, wrapping the given UTF-16 index ranges
+    // in <mark>. Indices describe the raw text; do not modify it first.
+    function highlightEl(el, text, indices) {
+      var pos = 0;
+      indices.forEach(function (ind) {
+        if (ind[0] > pos) {
+          el.appendChild(document.createTextNode(text.slice(pos, ind[0])));
+        }
+        var mk = document.createElement('mark');
+        mk.textContent = text.slice(ind[0], ind[1] + 1);
+        el.appendChild(mk);
+        pos = ind[1] + 1;
+      });
+      if (pos < text.length) {
+        el.appendChild(document.createTextNode(text.slice(pos)));
+      }
+    }
+
+    // Select the snippet slice around the first content match.
+    function snippet(text, matches) {
+      var m = null;
+      (matches || []).forEach(function (mt) {
+        if (!m && mt.key === 'content' && mt.indices.length) m = mt.indices[0];
+      });
+      if (!m) return text.slice(0, 160);
+      var start = Math.max(0, m[0] - 80);
+      var end = Math.min(text.length, m[1] + 120);
+      return (start > 0 ? '…' : '') + text.slice(start, end) + (end < text.length ? '…' : '');
+    }
+
+    function render(query) {
+      results.textContent = '';
+      if (!query.trim()) {
+        status.textContent = 'Type to search.';
+        return;
+      }
+
+      var out = fuse.search(query).slice(0, 50);
+      if (!out.length) {
+        status.textContent = 'No results for “' + query.trim() + '”.';
+        return;
+      }
+
+      status.textContent = out.length + ' result(s) for “' + query.trim() + '”.';
+      out.forEach(function (r) {
+        var li = document.createElement('li');
+
+        var meta = document.createElement('div');
+        meta.className = 'search-result-meta';
+        if (r.item.date) {
+          var time = document.createElement('time');
+          time.textContent = r.item.date;
+          meta.appendChild(time);
+        }
+        var a = document.createElement('a');
+        a.href = r.item.url;
+        a.className = 'search-result-title';
+        var titleMatch = null;
+        (r.matches || []).forEach(function (mt) {
+          if (!titleMatch && mt.key === 'title' && mt.indices.length) titleMatch = mt.indices;
+        });
+        if (titleMatch) highlightEl(a, r.item.title, titleMatch);
+        else a.textContent = r.item.title;
+        meta.appendChild(a);
+        li.appendChild(meta);
+
+        var p = document.createElement('p');
+        p.className = 'search-snippet';
+        p.textContent = snippet(r.item.content, r.matches);
+        li.appendChild(p);
+
+        results.appendChild(li);
+      });
+    }
+
+    input.addEventListener('input', function (e) {
+      render(e.target.value);
+    });
+  })();
+</script>
+{{ end }}

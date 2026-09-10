@@ -1,0 +1,21 @@
+{{ $section := .Get "section" | default "posts" }}
+{{ $limit := .Get "limit" | default 5 }}
+
+<ul class="blog-posts">
+    {{ range where .Site.RegularPages "Section" $section | first $limit }}
+    <li>
+        <span>
+            <i>
+                <time datetime='{{ .Date.Format "2006-01-02" }}'>
+                    {{ .Date.Format "2006-01-02" }}
+                </time>
+            </i>
+        </span>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+    </li>
+    {{ else }}
+    <li>
+        No posts yet
+    </li>
+    {{ end }}
+</ul>

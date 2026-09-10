@@ -1,0 +1,6 @@
+<head>
+    <link rel="stylesheet" href="{{ "css/codeblock.css" | relURL }}" />
+    {{ if .Param "math" }}
+        {{ partialCached "math.html" . }}
+    {{ end }}
+</head>

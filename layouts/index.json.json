@@ -1,0 +1,11 @@
+{{- /* Search index consumed by the /search/ page (raw JSON, no <body>). */ -}}
+{{- $pages := slice -}}
+{{- range .Site.RegularPages -}}
+  {{- $pages = $pages | append (dict
+        "title" .Title
+        "url" .RelPermalink
+        "date" (.Date.Format "2006-01-02")
+        "content" (plainify .Content | replaceRE `[ \t\r\n]+` " " | truncate 5000)
+    ) -}}
+{{- end -}}
+{{- $pages | jsonify -}}
